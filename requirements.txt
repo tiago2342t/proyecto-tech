@@ -6,3 +6,4 @@ jinja2
 numpy
 python-multipart
 seaborn
+lightgbm
