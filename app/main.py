@@ -1,8 +1,8 @@
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates  # Importamos RedirectResponse
-from app.controllers.iris_controller import router as iris_router
+from app.controllers.properties_controller import router as prop_router
 
 # Crear la instancia de FastAPI
 app = FastAPI()
@@ -16,14 +16,14 @@ app.mount("/videos", StaticFiles(directory=Path(__file__).resolve().parent / "st
 
 
 # Registrar las rutas del controlador
-app.include_router(iris_router, prefix="/iris", tags=["iris"])
+app.include_router(prop_router, prefix="/properties", tags=["properties"])
 
-# Redirigir automáticamente la raíz (/) a /iris
+# Redirigir automáticamente la raíz (/) a /properties
 @app.get("/")
-async def root():
+async def root(request: Request):
     # Inicializar el objeto Jinja2Templates globalmente para el renderizado
     templates = Jinja2Templates(directory="app/templates")
-    return templates.TemplateResponse("home.html", {"request": {}})
+    return templates.TemplateResponse(request = request, name = "home.html")
 
 
 

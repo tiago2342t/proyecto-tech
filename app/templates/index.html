@@ -1,117 +1,901 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estimador de precios de vivienda | FincaRaíz IA</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clasificador Iris</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-</head>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      defer
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
 
-<body>
+    <!-- Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <div class="container mt-5">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">FincaRaíz IA</h3>
-                <ul class="nav nav-tabs card-header-tabs" id="irisTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="apartamentos-tab" data-bs-toggle="tab"
-                            data-bs-target="#apartamentos" type="button" role="tab" aria-controls="apartamentos"
-                            aria-selected="true">Apartamentos</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="casas-tab" data-bs-toggle="tab" data-bs-target="#casas"
-                            type="button" role="tab" aria-controls="casas" aria-selected="false">Casas</button>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="tab-content" id="irisTabsContent">
-                    <!-- Apartamentos -->
-                    <div class="tab-pane fade show active" id="apartamentos" role="tabpanel"
-                        aria-labelledby="apartamentos-tab">
-                        <form action="/iris/predict/apartamento" method="post">
-                            <div class="mb-3">
-                                <label class="form-label">Ciudad:</label>
-                                <input type="text" class="form-control" name="ciudad" step="any" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Ubicación:</label>
-                                <input type="text" class="form-control" name="ubicación" step="any" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Baños:</label>
-                                <input type="number" class="form-control" name="baños" step="any" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Habitaciones:</label>
-                                <input type="number" class="form-control" name="habitaciones" step="any" required>
-                            </div>
-                             <div class="mb-3">
-                                <label class="form-label">Garages:</label>
-                                <input type="number" class="form-control" name="garages" step="any" required>
-                            </div>
-                             <div class="mb-3">
-                                <label class="form-label">Area:</label>
-                                <input type="number" class="form-control" name="area" step="any" required>
-                            </div>
-                             <div class="mb-3">
-                                <label class="form-label">Estrato:</label>
-                                <input type="number" class="form-control" name="estrato" step="any" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Clasificar Apartamento</button>
-                        </form>
-                    </div>
+    <style>
+      :root {
+        --fondo: #f4f5ef;
+        --verde: #214e40;
+        --verde-oscuro: #173c32;
+        --texto: #24372f;
+        --secundario: #596b61;
+        --borde: #d7dfd6;
+        --claro: #f6f8f3;
+      }
 
-                    <!-- Casas -->
-                    <div class="tab-pane fade" id="casas" role="tabpanel" aria-labelledby="casas-tab">
-                        <form action="/iris/predict/casa" method="post">
-                             <div class="mb-3">
-                                <label class="form-label">Ciudad:</label>
-                                <input type="text" class="form-control" name="ciudad" step="any" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Ubicación:</label>
-                                <input type="text" class="form-control" name="ubicación" step="any" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Baños:</label>
-                                <input type="number" class="form-control" name="baños" step="any" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Habitaciones:</label>
-                                <input type="number" class="form-control" name="habitaciones" step="any" required>
-                            </div>
-                             <div class="mb-3">
-                                <label class="form-label">Garages:</label>
-                                <input type="number" class="form-control" name="garages" step="any" required>
-                            </div>
-                             <div class="mb-3">
-                                <label class="form-label">Area:</label>
-                                <input type="number" class="form-control" name="area" step="any" required>
-                            </div>
-                             <div class="mb-3">
-                                <label class="form-label">Estrato:</label>
-                                <input type="number" class="form-control" name="estrato" step="any" required>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">Clasificar Casa</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background: var(--fondo);
+        color: var(--texto);
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+
+      .container.estimador {
+        max-width: 1180px;
+        margin-top: 36px;
+        margin-bottom: 36px;
+      }
+
+      .estimador .card {
+        overflow: hidden;
+        border: 1px solid var(--borde);
+        border-radius: 22px;
+        background: #fff;
+      }
+
+      .estimador .card-header {
+        padding: 24px clamp(20px, 4vw, 42px) 30px;
+        color: #fff;
+        background: var(--verde-oscuro);
+        border: 0;
+      }
+
+      .marca {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+      }
+
+      .marca::before {
+        content: "";
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #d6e6c1;
+        border-radius: 4px 4px 4px 0;
+        transform: rotate(-8deg);
+      }
+
+      .card-header h1 {
+        margin: 0;
+        color: #fff;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        font-weight: 400;
+        line-height: 1.08;
+        letter-spacing: -0.045em;
+      }
+
+      .card-header p {
+        margin: 10px 0 0;
+        color: #dce8dd;
+        font-size: 0.96rem;
+      }
+
+      .estimador .card-body {
+        padding: clamp(18px, 3vw, 36px);
+      }
+
+      .titulo-seccion {
+        margin: 0 0 16px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.48rem;
+        font-weight: 500;
+        letter-spacing: -0.025em;
+      }
+
+      .seccion-detalles {
+        margin-top: 23px;
+        padding-top: 21px;
+        border-top: 1px solid var(--borde);
+      }
+
+      .form-label {
+        margin-bottom: 6px;
+        color: var(--texto);
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .form-control,
+      .form-select {
+        min-height: 44px;
+        border-color: #c4cec4;
+        border-radius: 9px;
+        color: var(--texto);
+      }
+
+      .form-control::placeholder {
+        color: #6b786f;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--verde);
+        box-shadow: 0 0 0 3px rgb(33 78 64 / 13%);
+      }
+
+      .form-control:disabled {
+        background: #f0f3ed;
+      }
+
+      .form-text {
+        color: var(--secundario);
+        font-size: 0.8rem;
+      }
+
+      .form-text:empty {
+        display: none;
+      }
+
+      .panel-mapa {
+        overflow: hidden;
+        border: 1px solid var(--borde);
+        border-radius: 15px;
+        background: var(--claro);
+      }
+
+      .encabezado-mapa {
+        padding: 18px 18px 13px;
+      }
+
+      .encabezado-mapa .titulo-seccion {
+        margin-bottom: 3px;
+      }
+
+      .encabezado-mapa p {
+        margin: 0;
+        color: var(--secundario);
+        font-size: 0.87rem;
+      }
+
+      #mapa {
+        width: 100%;
+        height: clamp(350px, 48vh, 510px);
+        background: #e2e9df;
+      }
+
+      #ayuda-mapa {
+        display: block;
+        margin: 0;
+        padding: 12px 16px;
+        line-height: 1.45;
+      }
+
+      .btn-estimar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        padding: 10px 17px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--verde);
+        font-weight: 600;
+      }
+
+      .btn-estimar:hover,
+      .btn-estimar:focus-visible,
+      .btn-estimar:active {
+        background: var(--verde-oscuro) !important;
+      }
+      .campo-obligatorio::after {
+        content: " *";
+        color: #b42e2e;
+      }
+
+      footer {
+        margin-top: auto;
+        padding: 18px 16px;
+        border-top: 1px solid var(--borde);
+        color: var(--secundario);
+        text-align: center;
+        font-size: 0.8rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      /* En móvil, el mapa aparece después del barrio y antes de los detalles. */
+      .distribucion {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        grid-template-areas:
+          "ubicacion mapa"
+          "detalles mapa";
+        column-gap: clamp(22px, 3vw, 40px);
+        align-items: start;
+      }
+
+      .bloque-ubicacion {
+        grid-area: ubicacion;
+      }
+      .seccion-detalles {
+        grid-area: detalles;
+      }
+      .panel-mapa {
+        grid-area: mapa;
+      }
+
+      @media (max-width: 767.98px) {
+        .container.estimador {
+          margin-top: 14px;
+          margin-bottom: 20px;
+        }
+
+        .distribucion {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-areas: "ubicacion" "mapa" "detalles";
+          row-gap: 20px;
+        }
+
+        .seccion-detalles {
+          margin-top: 0;
+          padding-top: 0;
+          border: 0;
+        }
+
+        #mapa {
+          height: 245px;
+        }
+
+        .marca {
+          margin-bottom: 14px;
+        }
+      }
+      .estimador .card-header {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background: linear-gradient(110deg, #123c32 0%, #215b48 100%);
+      }
+
+      .estimador .card-header::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        inset: 0 0 0 52%;
+        pointer-events: none;
+        background: repeating-radial-gradient(
+          ellipse at 95% 150%,
+          transparent 0 19px,
+          rgb(216 238 205 / 17%) 20px 21px,
+          transparent 22px 38px
+        );
+      }
+
+      .btn-estimar {
+        box-shadow: 0 3px 9px rgb(23 60 50 / 14%);
+      }
+
+      .btn-estimar:focus-visible {
+        outline: 3px solid #81b69b;
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 575px) {
+        .estimador .card-header::after {
+          left: 72%;
+          opacity: 0.65;
+        }
+      }
+
+      /* Campos válidos: borde verde sin el check */
+      form.was-validated .form-control:valid {
+        background-image: none;
+        padding-right: 0.75rem;
+      }
+
+      /* Desplegables válidos: mostrar únicamente la flecha */
+      form.was-validated .form-select:valid:not([multiple]):not([size]) {
+        background-image: var(--bs-form-select-bg-img);
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        padding-right: 2.25rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="container estimador">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <div class="marca">FincaRaíz IA</div>
+          <h1>Estima el precio de tu vivienda</h1>
+          <p>
+            Casas y apartamentos en Bogotá y Medellín · Precios en pesos
+            colombianos
+          </p>
         </div>
-    </div>
-       <footer class="bg-dark text-white text-center py-4">
-        <p>&copy; 2025 FincaRaízProyecto IA. Juan Camilo Espinosa Alzate, Ximena Gaibao, Jaider Barrios, Santiago Higuita .</p>
+
+        <div class="card-body">
+          <form action="/properties/predict/casa" method="post">
+            <div class="distribucion">
+              <!-- Tipo de vivienda, ciudad y barrio -->
+              <section
+                class="bloque-ubicacion"
+                aria-labelledby="titulo-ubicacion"
+              >
+                <h2 id="titulo-ubicacion" class="titulo-seccion">
+                  Tipo y ubicación
+                </h2>
+
+                <div class="row g-3">
+                  <div class="col-sm-6">
+                    <label
+                      for="tipo_propiedad"
+                      class="form-label"
+                      campo-obligatorio
+                    >
+                      Tipo de vivienda
+                    </label>
+                    <select
+                      id="tipo_propiedad"
+                      name="tipo_propiedad"
+                      class="form-select"
+                      required
+                    >
+                      <option value="" disabled selected>
+                        Selecciona el tipo
+                      </option>
+                      {% for tipo in opciones["categorias"]["Tipo Propiedad"] %}
+                      <option value="{{ tipo }}">{{ tipo }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="col-sm-6">
+                    <label for="ciudad" class="form-label" campo-obligatorio>
+                      Ciudad
+                    </label>
+                    <select
+                      id="ciudad"
+                      name="ciudad"
+                      class="form-select"
+                      required
+                    >
+                      <option value="" disabled selected>
+                        Selecciona la ciudad
+                      </option>
+                      {% for ciudad in opciones["categorias"]["Ciudad"] %}
+                      <option value="{{ ciudad }}">{{ ciudad }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="col-12">
+                    <label for="ubicacion" class="form-label" campo-obligatorio>
+                      Barrio o sector
+                    </label>
+                    <input
+                      id="ubicacion"
+                      name="ubicación"
+                      class="form-control"
+                      list="sectores"
+                      placeholder="Primero selecciona la ciudad"
+                      autocomplete="off"
+                      required
+                    />
+                    <datalist id="sectores"></datalist>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Mapa interactivo -->
+              <section
+                class="panel-mapa"
+                aria-labelledby="titulo-mapa"
+                campo-obligatorio
+              >
+                <div class="encabezado-mapa">
+                  <h2 id="titulo-mapa" class="titulo-seccion">
+                    Ubica la vivienda
+                  </h2>
+                  <p>Toca el mapa para seleccionar un sector cercano.</p>
+                </div>
+
+                <div
+                  id="mapa"
+                  aria-label="Mapa de ubicación de la vivienda"
+                ></div>
+
+                <small id="ayuda-mapa" class="form-text" aria-live="polite">
+                  Selecciona una ciudad para explorar sus sectores.
+                </small>
+              </section>
+
+              <!-- Características del inmueble -->
+              <section
+                class="seccion-detalles"
+                aria-labelledby="titulo-detalles"
+              >
+                <h2 id="titulo-detalles" class="titulo-seccion">
+                  Características de la vivienda
+                </h2>
+
+                <div class="row g-3">
+                  <div class="col-6">
+                    <label for="banos" class="form-label" campo-obligatorio>
+                      Baños
+                    </label>
+                    <input
+                      id="banos"
+                      name="baños"
+                      type="number"
+                      class="form-control"
+                      placeholder="Ej. 2"
+                      min="0"
+                      step="1"
+                      aria-describedby="rango-banos"
+                      required
+                    />
+                    <small
+                      id="rango-banos"
+                      class="form-text"
+                      data-rango="Banos"
+                    ></small>
+                  </div>
+
+                  <div class="col-6">
+                    <label
+                      for="habitaciones"
+                      class="form-label"
+                      campo-obligatorio
+                    >
+                      Habitaciones
+                    </label>
+                    <input
+                      id="habitaciones"
+                      name="habitaciones"
+                      type="number"
+                      class="form-control"
+                      placeholder="Ej. 3"
+                      min="0"
+                      step="1"
+                      aria-describedby="rango-habitaciones"
+                      required
+                    />
+                    <small
+                      id="rango-habitaciones"
+                      class="form-text"
+                      data-rango="Habitaciones"
+                    ></small>
+                  </div>
+
+                  <div class="col-6">
+                    <label for="garages" class="form-label" campo-obligatorio>
+                      Garajes
+                    </label>
+                    <input
+                      id="garages"
+                      name="garages"
+                      type="number"
+                      class="form-control"
+                      placeholder="Ej. 0"
+                      min="0"
+                      step="1"
+                      aria-describedby="rango-garages"
+                      required
+                    />
+                    <small
+                      id="rango-garages"
+                      class="form-text"
+                      data-rango="Garages"
+                    ></small>
+                  </div>
+
+                  <div class="col-6">
+                    <label for="area" class="form-label" campo-obligatorio>
+                      Área construida (m²)
+                    </label>
+                    <input
+                      id="area"
+                      name="area"
+                      type="number"
+                      class="form-control"
+                      placeholder="Ej. 90"
+                      min="0.01"
+                      step="any"
+                      aria-describedby="rango-area"
+                      required
+                    />
+                    <small
+                      id="rango-area"
+                      class="form-text"
+                      data-rango="Area Construida"
+                    ></small>
+                  </div>
+
+                  <div class="col-6">
+                    <label for="estrato" class="form-label" campo-obligatorio>
+                      Estrato
+                    </label>
+                    <select
+                      id="estrato"
+                      name="estrato"
+                      class="form-select"
+                      required
+                    >
+                      <option value="" selected disabled>Selecciona</option>
+                      {% for valor in range(1, 7) %}
+                      <option value="{{ valor }}">{{ valor }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="col-6">
+                    <label
+                      for="antiguedad"
+                      class="form-label"
+                      campo-obligatorio
+                    >
+                      Antigüedad
+                    </label>
+                    <select
+                      id="antiguedad"
+                      name="antiguedad"
+                      class="form-select"
+                      required
+                    >
+                      <option value="" selected disabled>Selecciona</option>
+                      {% for antiguedad in opciones["categorias"]["Antiguedad"]
+                      %}
+                      <option value="{{ antiguedad }}">{{ antiguedad }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-success btn-estimar w-100 mt-4"
+                >
+                  <span>Estimar precio de venta</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+
+                <p class="form-text mb-0 mt-2">
+                  Estimación basada en precios de anuncios recopilados en 2025.
+                </p>
+              </section>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>
+        &copy; 2025 FincaRaíz Proyecto IA · Juan Camilo Espinosa Alzate, Ximena
+        Gaibao, Jaider Barrios y Santiago Higuita.
+      </p>
     </footer>
 
-</body>
+    <!-- Datos enviados por FastAPI a la plantilla -->
+    <script id="datos-sectores" type="application/json">
+      {{ opciones["ubicaciones_por_ciudad"] | tojson }}
+    </script>
 
+    <script id="datos-mapa" type="application/json">
+      {{ opciones.get("sectores_mapa", {}) | tojson }}
+    </script>
+
+    <script id="datos-rangos" type="application/json">
+      {{ opciones.get("rangos_por_tipo", {}) | tojson }}
+    </script>
+
+    <script>
+      const sectoresPorCiudad = JSON.parse(
+        document.getElementById("datos-sectores").textContent,
+      );
+      const puntosPorCiudad = JSON.parse(
+        document.getElementById("datos-mapa").textContent,
+      );
+      const rangosPorTipo = JSON.parse(
+        document.getElementById("datos-rangos").textContent,
+      );
+
+      const tipoPropiedad = document.getElementById("tipo_propiedad");
+      const ciudad = document.getElementById("ciudad");
+      const ubicacion = document.getElementById("ubicacion");
+      const lista = document.getElementById("sectores");
+      const ayudaMapa = document.getElementById("ayuda-mapa");
+
+      const formatoNumero = new Intl.NumberFormat("es-CO", {
+        maximumFractionDigits: 2,
+      });
+
+      // Mostrar los rangos observados para casa o apartamento.
+      function actualizarRangos() {
+        const rangos = rangosPorTipo[tipoPropiedad.value] || {};
+
+        document.querySelectorAll("[data-rango]").forEach(function (elemento) {
+          const variable = elemento.dataset.rango;
+          const rango = rangos[variable];
+
+          if (!rango) {
+            elemento.textContent = "";
+            return;
+          }
+
+          const minimo = formatoNumero.format(rango.min);
+          const maximo = formatoNumero.format(rango.max);
+          elemento.textContent = `Rango observado: ${minimo} a ${maximo}`;
+        });
+      }
+
+      function validarUbicacion() {
+        const sectores = sectoresPorCiudad[ciudad.value] || [];
+        const esValida = sectores.includes(ubicacion.value);
+
+        ubicacion.setCustomValidity(
+          ubicacion.value && !esValida
+            ? "Selecciona un sector de la lista."
+            : "",
+        );
+
+        return esValida;
+      }
+
+      function actualizarSectores() {
+        const sectores = sectoresPorCiudad[ciudad.value] || [];
+
+        lista.replaceChildren(
+          ...sectores.map((sector) => new Option(sector, sector)),
+        );
+
+        ubicacion.value = "";
+        ubicacion.placeholder = ciudad.value
+          ? "Escribe para buscar tu barrio o sector"
+          : "Primero selecciona la ciudad";
+
+        validarUbicacion();
+      }
+
+      // El formulario sigue disponible si Leaflet no carga.
+      const mapa = window.L ? L.map("mapa", { scrollWheelZoom: false }) : null;
+
+      if (mapa) {
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(mapa);
+      }
+
+      let marcador = null;
+
+      function quitarMarcador() {
+        if (marcador) {
+          marcador.remove();
+          marcador = null;
+        }
+      }
+
+      function mostrarPunto(coordenadas) {
+        if (marcador) {
+          marcador.setLatLng(coordenadas);
+        } else {
+          marcador = L.marker(coordenadas).addTo(mapa);
+        }
+      }
+
+      function centrarCiudad() {
+        quitarMarcador();
+
+        if (!mapa) {
+          ayudaMapa.textContent =
+            "El mapa no cargó. Puedes seleccionar el barrio en el formulario.";
+          return;
+        }
+
+        const puntos = puntosPorCiudad[ciudad.value] || [];
+
+        if (!puntos.length) {
+          mapa.setView([5.5, -74.9], 7);
+          ayudaMapa.textContent = ciudad.value
+            ? "Esta ciudad no tiene sectores con coordenadas. Usa el campo de barrio."
+            : "Selecciona una ciudad para explorar sus sectores.";
+          return;
+        }
+
+        mapa.fitBounds(
+          puntos.map((punto) => [punto.lat, punto.lon]),
+          {
+            padding: [20, 20],
+            maxZoom: 13,
+          },
+        );
+
+        ayudaMapa.textContent =
+          "Toca el mapa o busca tu barrio en el formulario.";
+      }
+
+      function seleccionarSectorEnMapa(evento) {
+        const puntos = puntosPorCiudad[ciudad.value] || [];
+        if (!puntos.length) return;
+
+        let cercano = null;
+        let distancia = Infinity;
+
+        for (const punto of puntos) {
+          const metros = evento.latlng.distanceTo([punto.lat, punto.lon]);
+
+          if (metros < distancia) {
+            cercano = punto;
+            distancia = metros;
+          }
+        }
+
+        mostrarPunto(evento.latlng);
+
+        if (distancia > 2000) {
+          ubicacion.value = "";
+          validarUbicacion();
+          ayudaMapa.textContent =
+            "No hay un sector registrado a menos de 2 km. Elige otro punto o escribe el barrio.";
+          return;
+        }
+
+        ubicacion.value = cercano.sector;
+        validarUbicacion();
+        ayudaMapa.textContent =
+          `Sector sugerido: ${cercano.sector}. ` +
+          `Su punto de referencia está a ${Math.round(distancia)} m del clic.`;
+      }
+
+      function mostrarBarrioSeleccionado() {
+        const esValida = validarUbicacion();
+        if (!mapa) return;
+
+        const puntos = puntosPorCiudad[ciudad.value] || [];
+        const elegido = puntos.find(
+          (punto) => punto.sector === ubicacion.value,
+        );
+
+        quitarMarcador();
+
+        if (elegido) {
+          const coordenadas = [elegido.lat, elegido.lon];
+          mostrarPunto(coordenadas);
+          mapa.setView(coordenadas, 14);
+          ayudaMapa.textContent = `Ubicación de referencia de ${elegido.sector}.`;
+        } else {
+          ayudaMapa.textContent = esValida
+            ? "Sector seleccionado. No tiene coordenadas de referencia en el mapa."
+            : "Escribe el barrio y elige una de las sugerencias.";
+        }
+      }
+
+      tipoPropiedad.addEventListener("change", actualizarRangos);
+
+      ciudad.addEventListener("change", function () {
+        actualizarSectores();
+        centrarCiudad();
+      });
+
+      ubicacion.addEventListener("input", mostrarBarrioSeleccionado);
+      ubicacion.form.addEventListener(
+        "invalid",
+        () => {
+          ubicacion.form.classList.add("was-validated");
+        },
+        true,
+      );
+
+      if (mapa) {
+        mapa.on("click", seleccionarSectorEnMapa);
+      }
+
+      actualizarRangos();
+      actualizarSectores();
+      centrarCiudad();
+    </script>
+    <script type="module">
+      import {
+        animate,
+        stagger,
+      } from "https://cdn.jsdelivr.net/npm/motion@12.23.12/+esm";
+
+      const movimientoReducido = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
+
+      const tipoVivienda = document.getElementById("tipo_propiedad");
+      const selectorCiudad = document.getElementById("ciudad");
+      const campoBarrio = document.getElementById("ubicacion");
+      const botonEstimar = document.querySelector(".btn-estimar");
+      const flecha = botonEstimar.querySelector('[aria-hidden="true"]');
+
+      // Entrada breve de las secciones al abrir el formulario.
+      if (!movimientoReducido.matches) {
+        animate(
+          [".bloque-ubicacion", ".panel-mapa", ".seccion-detalles"].map(
+            (selector) => document.querySelector(selector),
+          ),
+          { opacity: [0, 1], y: [8, 0] },
+          { duration: 0.32, delay: stagger(0.06), ease: "easeOut" },
+        );
+      }
+
+      // Resaltar los rangos que actualizarRangos() acaba de mostrar.
+      tipoVivienda.addEventListener("change", () => {
+        if (movimientoReducido.matches) return;
+
+        const rangos = Array.from(
+          document.querySelectorAll("[data-rango]"),
+        ).filter((elemento) => elemento.textContent.trim());
+
+        if (rangos.length) {
+          animate(
+            rangos,
+            { opacity: [0.35, 1], color: ["#216548", "#596b61"] },
+            { duration: 0.45 },
+          );
+        }
+      });
+
+      // Guiar la mirada hacia el barrio después de elegir la ciudad.
+      selectorCiudad.addEventListener("change", () => {
+        if (movimientoReducido.matches || campoBarrio.disabled) return;
+
+        animate(
+          campoBarrio,
+          { backgroundColor: ["#e0f0e4", "#ffffff"] },
+          { duration: 0.65, ease: "easeOut" },
+        );
+      });
+
+      // La flecha responde tanto al mouse como al foco del teclado.
+      function moverFlecha(distancia) {
+        if (movimientoReducido.matches || !flecha) return;
+        animate(
+          flecha,
+          { x: distancia },
+          {
+            type: "spring",
+            stiffness: 340,
+            damping: 24,
+          },
+        );
+      }
+
+      botonEstimar.addEventListener("pointerenter", () => moverFlecha(4));
+      botonEstimar.addEventListener("pointerleave", () => moverFlecha(0));
+      botonEstimar.addEventListener("focus", () => moverFlecha(4));
+      botonEstimar.addEventListener("blur", () => moverFlecha(0));
+    </script>
+  </body>
 </html>

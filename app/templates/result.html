@@ -1,56 +1,376 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Precio estimado | FincaRaíz IA</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultado de la Clasificación</title>
-    <!-- Incluir Bootstrap desde el CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
 
-</head>
+    <style>
+      :root {
+        --fondo: #f4f5ef;
+        --verde: #214e40;
+        --verde-oscuro: #173c32;
+        --texto: #24372f;
+        --secundario: #56695e;
+        --borde: #d7dfd6;
+      }
 
-<body>
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        background: var(--fondo);
+        color: var(--texto);
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
 
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-success text-white">
-                        <h3>Resultado de la Clasificación</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-success">
-                            <h5 class="alert-heading">Clasificación Predicha:</h5>
-                            <p><strong>{{ prediction }}</strong></p>
-                        </div>
+      .pagina {
+        width: min(100% - 32px, 1000px);
+        margin: clamp(24px, 7vw, 80px) auto;
+      }
 
-                        <!-- Contenedor de resultado con grid -->
-                        <div class="row align-items-baseline">
-                            <!-- Texto del resultado -->
-                            <div class="col-12 col-md-3">
-                                <h4>Gráfico de Dispersión</h4>
-                            </div>
+      .tarjeta {
+        overflow: hidden;
+        border: 1px solid var(--borde);
+        border-radius: 22px;
+        background: white;
+        box-shadow: 0 12px 36px rgb(23 60 50 / 7%);
+      }
 
-                            <!-- Gráfico a la derecha del texto -->
-                            <div class="col-12 col-md-9">
-                                <img src="data:image/png;base64,{{ image_base64 }}" alt="Gráfico de Dispersión"
-                                    class="img-fluid">
-                            </div>
-                        </div>
+      .cabecera {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        padding: clamp(28px, 5vw, 52px);
+        color: white;
+        background: linear-gradient(110deg, #123c32, #215b48);
+      }
 
-                        <br><br>
-                        <a href="/iris" class="btn btn-secondary">Volver a intentar</a>
-                    </div>
-                </div>
+      .cabecera::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        inset: 0 0 0 45%;
+        pointer-events: none;
+        background: repeating-radial-gradient(
+          ellipse at 95% 145%,
+          transparent 0 22px,
+          rgb(216 238 205 / 18%) 23px 24px,
+          transparent 25px 43px
+        );
+      }
+
+      .marca {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        color: white;
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      .marca::before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        border: 2px solid #d6e6c1;
+        border-radius: 4px 4px 4px 0;
+        transform: rotate(-8deg);
+      }
+
+      h1 {
+        margin: 0;
+        font:
+          400 clamp(2rem, 5vw, 3.5rem)/1.08 Georgia,
+          serif;
+        letter-spacing: -0.045em;
+        text-wrap: balance;
+      }
+
+      .contenido {
+        padding: clamp(26px, 5vw, 52px);
+      }
+
+      .importe {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 12px;
+        margin: 0 0 16px;
+        color: var(--verde-oscuro);
+      }
+
+      .precio {
+        font-size: clamp(2rem, 6vw, 4.5rem);
+        font-weight: 650;
+        line-height: 1.08;
+        letter-spacing: -0.055em;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+      }
+
+      .moneda {
+        color: var(--secundario);
+        font-size: 1rem;
+        font-weight: 650;
+        letter-spacing: 0.06em;
+      }
+
+      .descripcion {
+        max-width: 59ch;
+        margin: 0;
+        color: var(--secundario);
+        line-height: 1.65;
+      }
+
+      .acciones {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px 24px;
+        margin-top: 28px;
+        padding-top: 24px;
+        border-top: 1px solid var(--borde);
+      }
+
+      .boton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        min-height: 48px;
+        padding: 12px 21px;
+        border-radius: 10px;
+        background: var(--verde);
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .boton:hover {
+        background: var(--verde-oscuro);
+        color: white;
+      }
+
+      .enlace {
+        color: var(--verde);
+        font-weight: 600;
+        text-underline-offset: 4px;
+      }
+
+      a:focus-visible {
+        outline: 3px solid #80ab90;
+        outline-offset: 4px;
+      }
+
+      footer {
+        margin-top: auto;
+        padding: 19px 16px;
+        border-top: 1px solid var(--borde);
+        color: var(--secundario);
+        text-align: center;
+        font-size: 0.8rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      @media (max-width: 575px) {
+        .pagina {
+          margin-top: 18px;
+        }
+
+        .cabecera::after {
+          left: 68%;
+        }
+
+        .acciones {
+          flex-direction: column;
+        }
+
+        .boton {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="pagina">
+      <article class="card tarjeta">
+        <header class="cabecera">
+          <a href="/" class="marca" aria-label="FincaRaíz IA, ir al inicio">
+            FincaRaíz IA
+          </a>
+
+          <h1>Precio de venta estimado</h1>
+        </header>
+
+        <div class="card-body contenido">
+          <p class="importe" data-entrada>
+            <strong class="precio">{{ prediction | replace(",", ".") }}</strong>
+            <span class="moneda">COP</span>
+          </p>
+          <section class="border rounded-3 p-3 p-sm-4 mb-4" data-entrada>
+            <h2 class="h5 mb-2">
+              {{ vivienda.tipo }} en {{ vivienda.barrio }}, {{ vivienda.ciudad
+              }}
+            </h2>
+
+            <p class="descripcion">
+              {{ vivienda.area }} m² · {{ vivienda.habitaciones }} · {{
+              vivienda.banos }} · {{ vivienda.garajes }}
+            </p>
+
+            <p class="descripcion mt-1">
+              Estrato {{ vivienda.estrato }} · Antigüedad {{ vivienda.antiguedad
+              }}
+            </p>
+
+            <p class="mt-3 mb-0">
+              <span class="descripcion">Precio estimado por m²</span>
+              <strong>{{ precio_m2 }}</strong>
+            </p>
+          </section>
+          <section
+            class="mb-4"
+            aria-labelledby="titulo-comparables"
+            data-entrada
+          >
+            <h2 id="titulo-comparables" class="h5 mb-2">
+              Anuncios del mismo sector
+            </h2>
+
+            <p class="descripcion small mb-3">
+              Hasta cinco viviendas del mismo tipo, ordenadas por cercanía en
+              área. Precios publicados en los anuncios recopilados en 2025.
+            </p>
+
+            <div
+              id="contenedor-comparables"
+              class="table-responsive border rounded-3"
+              hidden
+            >
+              <table class="table align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">Área construida</th>
+                    <th scope="col" class="text-end">Precio publicado</th>
+                    <th scope="col" class="text-end">
+                      Precio publicado por m²
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="filas-comparables"></tbody>
+              </table>
             </div>
+
+            <p id="sin-comparables" class="descripcion small" hidden>
+              No encontramos anuncios de ese tipo de vivienda en el sector
+              seleccionado.
+            </p>
+          </section>
+
+          <p class="descripcion" data-entrada>
+            La estimación corresponde a la ubicación y las características que
+            ingresaste. El modelo toma como referencia los precios publicados en
+            anuncios de vivienda de 2025.
+          </p>
+
+          <nav
+            class="acciones"
+            aria-label="Opciones después de la estimación"
+            data-entrada
+          >
+            <a href="/properties/" class="boton">
+              Estimar otra vivienda
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <a href="/" class="enlace">Volver al inicio</a>
+          </nav>
         </div>
-    </div>
+      </article>
+    </main>
 
-</body>
+    <footer>
+      <p>
+        FincaRaíz Proyecto IA · Juan Camilo Espinosa Alzate, Ximena Gaibao,
+        Jaider Barrios y Santiago Higuita.
+      </p>
+    </footer>
+    <script id="datos-comparables" type="application/json">
+  {{ comparables | tojson }}
+</script>
 
+<script>
+  const anuncios = JSON.parse(
+    document.getElementById("datos-comparables").textContent
+  );
+
+  const contenedor = document.getElementById("contenedor-comparables");
+  const filas = document.getElementById("filas-comparables");
+  const mensajeVacio = document.getElementById("sin-comparables");
+
+  const formatoArea = new Intl.NumberFormat("es-CO", {
+    maximumFractionDigits: 2
+  });
+
+  const formatoPrecio = new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0
+  });
+
+  contenedor.hidden = anuncios.length === 0;
+  mensajeVacio.hidden = anuncios.length > 0;
+
+  for (const anuncio of anuncios) {
+    const fila = document.createElement("tr");
+
+    const area = document.createElement("td");
+    area.textContent = `${formatoArea.format(anuncio.area)} m²`;
+
+    const precio = document.createElement("td");
+    precio.className = "text-end";
+    precio.textContent = formatoPrecio.format(anuncio.precio);
+
+    const precioM2 = document.createElement("td");
+    precioM2.className = "text-end";
+    precioM2.textContent = formatoPrecio.format(anuncio.precio_m2);
+
+    fila.append(area, precio, precioM2);
+    filas.appendChild(fila);
+  }
+</script>
+
+    <script type="module">
+      import {
+        animate,
+        stagger,
+      } from "https://cdn.jsdelivr.net/npm/motion@12.23.12/+esm";
+
+      const reducirMovimiento = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      if (!reducirMovimiento) {
+        animate(
+          document.querySelectorAll("[data-entrada]"),
+          { opacity: [0, 1], y: [8, 0] },
+          { duration: 0.35, delay: stagger(0.07), ease: "easeOut" },
+        );
+      }
+    </script>
+  </body>
 </html>
